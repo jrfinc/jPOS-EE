@@ -43,6 +43,7 @@ import org.jpos.core.Configurable;
 import org.jpos.core.Configuration;
 import org.jpos.ee.BLException;
 import org.jpos.ee.DB;
+import org.jpos.qi.system.EmptyView;
 import org.jpos.util.AmountConverter;
 
 import java.math.BigDecimal;
@@ -116,13 +117,17 @@ public abstract class QIEntityView<T> extends VerticalLayout implements View, Co
 
     public void showGeneralView () {
         try {
-            Layout header = createHeader(title);
-            addComponent(header);
-            grid = createGrid();
-            grid.setDataProvider(getHelper().getDataProvider());
-            formatGrid();
-            addComponent(grid);
-            setExpandRatio(grid, 1);
+            if (getHelper().getItemCount() == 0) {
+                getApp().getNavigator().getDisplay().showView(new EmptyView(canAdd(),createHeader(title)));
+            } else {
+                Layout header = createHeader(title);
+                addComponent(header);
+                grid = createGrid();
+                grid.setDataProvider(getHelper().getDataProvider());
+                formatGrid();
+                addComponent(grid);
+                setExpandRatio(grid, 1);
+            }
         } catch (Exception e) {
             getApp().getLog().error(e);
             getApp().displayNotification(e.getMessage());
