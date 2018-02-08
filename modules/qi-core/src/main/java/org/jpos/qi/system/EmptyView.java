@@ -31,7 +31,8 @@ import org.jpos.qi.views.DefaultView;
  */
 public class EmptyView extends DefaultView implements ViewDisplay  {
 
-    public EmptyView(boolean canAdd) {
+    public EmptyView(boolean canAdd,HorizontalLayout header) {
+        addComponent(header);
         Label emptyLabel = new Label("There are no items in this view");
         emptyLabel.addStyleName(ValoTheme.LABEL_H2);
         addComponents(emptyLabel);
@@ -51,9 +52,8 @@ public class EmptyView extends DefaultView implements ViewDisplay  {
 
     }
 
-
     @Override
     public void showView(View view) {
-
+        QI.getQI().getNavigator().getDisplay().showView(view);
     }
 }
