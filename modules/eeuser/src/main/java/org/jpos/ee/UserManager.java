@@ -78,10 +78,8 @@ public class UserManager extends DBManager<User> {
     }
 
     @Override
-    protected Predicate[] buildFilters(Root<User> root) {
-        return new Predicate[] {
-                db.session().getCriteriaBuilder().isFalse(root.get("deleted"))
-        };
+    protected Predicate buildFilters(Root<User> root) {
+        return db.session().getCriteriaBuilder().isFalse(root.get("deleted"));
     }
 
     public User getUserByNick (String nick)

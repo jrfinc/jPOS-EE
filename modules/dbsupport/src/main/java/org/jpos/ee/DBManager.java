@@ -41,12 +41,13 @@ public class DBManager<T> {
         CriteriaBuilder criteriaBuilder = db.session().getCriteriaBuilder();
         CriteriaQuery<Long> query = criteriaBuilder.createQuery(Long.class);
         Root<T> root = query.from(clazz);
-        Predicate[] predicates = buildFilters(root);
-        if (predicates != null)
-            query.where(predicates);
+        Predicate filter = buildFilters(root);
+        if (filter != null)
+            query.where(filter);
         query.select(criteriaBuilder.count(root));
         return db.session().createQuery(query).getSingleResult().intValue();
     }
+
 
     public List<T> getAll(int offset, int limit, Map<String,Boolean> orders) {
         CriteriaBuilder criteriaBuilder = db.session().getCriteriaBuilder();
@@ -60,9 +61,9 @@ public class DBManager<T> {
                 orderList.add(order);
             }
         }
-        Predicate[] predicates = buildFilters(root);
-        if (predicates != null)
-            query.where(predicates);
+        Predicate filter = buildFilters(root);
+        if (filter != null)
+            query.where(filter);
         query.select(root);
         query.orderBy(orderList);
         Query queryImp = db.session().createQuery(query);
@@ -112,16 +113,16 @@ public class DBManager<T> {
         Predicate equals = criteriaBuilder.equal(root.get(param), value);
         query.where(equals);
         if (withFilter) {
-            Predicate[] predicates = buildFilters(root);
-            if (predicates != null) {
+            Predicate filter = buildFilters(root);
+            if (filter != null) {
                 //overrides previous predicates
-                query.where(criteriaBuilder.and(criteriaBuilder.and(predicates), equals));
+                query.where(criteriaBuilder.and(filter, equals));
             }
         }
         query.select(root);
         return query;
     }
 
-    protected Predicate[] buildFilters(Root<T> root) { return null; }
+    protected Predicate buildFilters(Root<T> root) { return null; }
 
 }

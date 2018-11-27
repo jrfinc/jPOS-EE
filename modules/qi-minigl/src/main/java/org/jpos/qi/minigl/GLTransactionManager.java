@@ -44,23 +44,22 @@ public class GLTransactionManager extends DBManager<GLTransaction> {
     }
 
     @Override
-    protected Predicate[] buildFilters(Root<GLTransaction> root) {
+    protected Predicate buildFilters(Root<GLTransaction> root) {
         db.session().enableFetchProfile("eager");
         Predicate journalPredicate = null;
-        if (journalId != null) {
+        Predicate datePredicate = null;
+        if (journalId != null)
             journalPredicate = db.session().getCriteriaBuilder().equal(root.get("journal"), this.journalId);
-        }
-        if (start != null && end != null) {
-            Predicate datePredicate = db.session().getCriteriaBuilder().between(root.get("timestamp"), start, end);
-            if (journalId == null) {
-                return new Predicate[] { datePredicate };
+        if (start != null && end != null)
+            datePredicate = db.session().getCriteriaBuilder().between(root.get("timestamp"), start, end);
+        if (journalPredicate != null) {
+            if (datePredicate != null) {
+                return db.session().getCriteriaBuilder().and(journalPredicate,datePredicate);
             }
-            Predicate and = db.session().getCriteriaBuilder().and(journalPredicate,datePredicate);
-            return new Predicate[] { and };
+            return journalPredicate;
+        } else if (datePredicate != null) {
+            return datePredicate;
         }
-        if (journalPredicate == null) {
-            return null;
-        }
-        return new Predicate[] { journalPredicate };
+        return null;
     }
 }

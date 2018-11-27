@@ -49,13 +49,14 @@ public class ConsumerManager extends DBManager<Consumer> {
         return getAll();
     }
 
-    protected Predicate[] buildFilters(Root<Consumer> root) {
-        Predicate notDeleted = db.session.getCriteriaBuilder().isFalse(root.get("deleted"));
+    @Override
+    protected Predicate buildFilters(Root<Consumer> root) {
+        Predicate notDeleted = db.session().getCriteriaBuilder().isFalse(root.get("deleted"));
         if (user != null) {
-            Predicate p = db.session().getCriteriaBuilder().equal(root.get("user"),user.getId());
-            return new Predicate[]{notDeleted,p};
+            Predicate sameUser = db.session().getCriteriaBuilder().equal(root.get("user"),user.getId());
+            return db.session().getCriteriaBuilder().and(notDeleted,sameUser);
         }
-        return new Predicate[]{notDeleted};
+        return notDeleted;
     }
 
 

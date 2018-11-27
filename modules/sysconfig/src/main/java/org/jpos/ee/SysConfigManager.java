@@ -130,11 +130,8 @@ public class SysConfigManager extends DBManager<SysConfig> {
     }
 
     @Override
-    protected Predicate[] buildFilters(Root<SysConfig> root) {
-        Predicate[] predicates = new Predicate[] {
-            db.session().getCriteriaBuilder().like(root.get("id"),prefix + "%")
-        };
-        return predicates;
+    protected Predicate buildFilters(Root<SysConfig> root) {
+        return db.session().getCriteriaBuilder().like(root.get("id"),prefix + "%");
     }
 
     @SuppressWarnings("unchecked")
